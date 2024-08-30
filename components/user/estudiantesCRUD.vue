@@ -1,12 +1,11 @@
 <template>
   <div>
-    <v-row>
+    <v-row align="center" justify="center">
       <v-spacer />
       <v-btn>Crear Estudiante</v-btn>
     </v-row>
     <v-row align="center" justify="center">
-      <v-data-table :headers="headers" :items="estudiantes">
-      </v-data-table>
+      <v-data-table :headers="headers" :items="estudiantes" />
     </v-row>
   </div>
 </template>
@@ -27,37 +26,37 @@ export default {
           value: 'nombre'
         },
         {
-          text: 'Nombre',
+          text: 'Apellido Paterno',
           align: 'center',
           sortable: true,
           value: 'apaterno'
         },
         {
-          text: 'Nombre',
+          text: 'Apellido Materno',
           align: 'center',
           sortable: true,
           value: 'amaterno'
         },
         {
-          text: 'Nombre',
+          text: 'Correo Electrónico',
           align: 'center',
           sortable: true,
           value: 'correo'
         },
         {
-          text: 'Nombre',
+          text: 'Dirección',
           align: 'center',
           sortable: true,
           value: 'direccion'
         },
         {
-          text: 'Nombre',
+          text: 'Teléfono',
           align: 'center',
           sortable: true,
           value: 'telefono'
         },
         {
-          text: 'Nombre',
+          text: 'Acciones',
           align: 'center',
           sortable: true,
           actions: ''
@@ -71,7 +70,8 @@ export default {
   },
   methods: {
     loadEstudiantes () {
-      const token = Cookies.get('Token')
+      const token = Cookies.get('token')
+      console.log('Token:', token)
       // Obtenemos AXIOS para dirigirnos a la Pagina:
       this.$axios.get('/usuarios', {
         headers: {
@@ -80,10 +80,11 @@ export default {
       }).then((res) => {
         console.log('respuesta de axios', res.data)
         if (res.data.message === 'success') {
-          this.estudiantes = res.data.estudiantes
+          this.estudiantes = res.data.usuarios
+          console.log(this.estudiantes)
         }
       }).catch((err) => {
-        console.log('Error!= ', err)
+        console.log('Error en Axios!= ', err)
       })
     }
   }

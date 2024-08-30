@@ -66,7 +66,7 @@ export default {
         {
           icon: 'mdi-account-check',
           title: 'Estudiantes',
-          to: '/dashboard/estudiantes'
+          to: '/dasboard/estudiantes'
         },
         {
           icon: 'mdi-logput',
