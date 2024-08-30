@@ -45,6 +45,7 @@
 </template>
 
 <script>
+import Cookies from 'js-cookie'
 export default {
   data () {
     return {
@@ -69,6 +70,10 @@ export default {
           //  console.log('respuesta ->', res)
           if (res.data && res.data.token) {
             // console.log('Token=>', res.data.token);
+            /* Primero con Local Storage */
+            Cookies.set('token', res.data.token, { expires: 1, path: '/' }) // El 'token' es otro difetente. | path para indicar que esta disponible en toda la raiz del proyecto
+            // localStorage.setItem('token', res.data.token) // Nombre de la variable a guardar | Lo que quiero guardar
+            // cookie.remove();
             this.$router.push('/dasboard')
           }
         })

@@ -22,6 +22,9 @@ export default {
     ]
   },
 
+  // Middleware
+  middleware: 'detect-push',
+
   // Global CSS: https://go.nuxtjs.dev/config-css
   css: [
   ],
