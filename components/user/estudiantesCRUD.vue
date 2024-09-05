@@ -2,26 +2,28 @@
   <div>
     <v-row align="center" justify="center">
       <v-spacer />
-      <v-btn class="mb-5" color="blue-grey darken-3" @click="showDialog = true">Crear Estudiante</v-btn>
+      <v-btn class="mb-5" color="blue-grey darken-3" @click="showDialog = true">
+        Crear Estudiante
+      </v-btn>
     </v-row>
     <v-row align="center" justify="center">
       <v-data-table
         :headers="headers"
         :items="estudiantes"
         class="blue-grey darken-2"
-        >
+      >
         <template #[`item.Acciones`]=" { item }">
           <v-tooltip bottom color="green darken-3">
             <template v-slot:activator="{ on, attrs }">
-              <v-btn icon color="green darken-1" @click="actualiza(item)" v-bind="attrs" v-on="on">
+              <v-btn icon color="green darken-1" v-bind="attrs" @click="actualiza(item)" v-on="on">
                 <v-icon>mdi-update</v-icon>
               </v-btn>
             </template>
             <span>Actualizar al Estudiante {{ item.nombre }} </span>
           </v-tooltip>
-          <v-tooltip bottom color="red darken-2"> <!-- Para el placeholder con hover al colocar mouse en boton de basura-->
+          <v-tooltip bottom color="red darken-2"><!-- Para el placeholder con hover al colocar mouse en boton de basura-->
             <template #activator="{ on, attrs }">
-              <v-btn icon color="red darken-3" @click="borrar(item)" v-bind="attrs" v-on="on">
+              <v-btn icon color="red darken-3" v-bind="attrs" @click="borrar(item)" v-on="on">
                 <v-icon>mdi-delete</v-icon>
               </v-btn>
             </template>
@@ -63,11 +65,57 @@
         </v-card-text>
         <v-card-actions>
           <v-row align="center" justify="center" class="mb-2 gap-2">
-            <v-btn @click="showDialog = false" color="error" class="mr-4">
+            <v-btn color="error" class="mr-4" @click="showDialog = false">
               Cancelar
             </v-btn>
-            <v-btn @click="crearEstudiante" color="green" class="ml-4">
+            <v-btn color="green" class="ml-4" @click="crearEstudiante">
               Agregar
+            </v-btn>
+          </v-row>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+    <v-dialog
+      v-model="showDialogActualiza"
+      width="600"
+      persistent>
+      <v-card color="grey darken-2">
+        <v-card-title>Actualizar un Estudiante</v-card-title>
+        <v-card-text ref="formUpdate">
+          <v-form>
+              <v-row align="center" justify="center">
+                <v-text-field v-model="estudiante.nombre" placeholder="Ingresa tu nombre" label="Nombre(s)" />
+              </v-row>
+              <v-row>
+                <v-text-field v-model="estudiante.apaterno" placeholder="Ingresa tu Apellido Paterno" label="A.Paterno" />
+              </v-row>
+            <v-row>
+              <v-text-field v-model="estudiante.amaterno" placeholder="Ingresa tu Apellido Materno" label="A.Materno" />
+            </v-row>
+            <v-row>
+              <v-text-field v-model="estudiante.direccion" placeholder="Ingresa tu direccion completa" label="Domicilio" />
+            </v-row>
+            <v-row>
+              <v-text-field v-model="estudiante.telefono" placeholder="p.ej: 457 123 5689" label="Numero de Telefono" />
+            </v-row>
+            <v-row>
+              <v-text-field v-model="estudiante.correo" placeholder="p.ej. correo@correo.com" label="Correo Electrónico" disabled />
+            </v-row>
+            <v-row>
+              <v-text-field v-model="estudiante.usuario" placeholder="Ingresa tu usuario" label="Usuario" />
+            </v-row>
+            <v-row>
+              <v-text-field v-model="estudiante.password" placeholder="Ingresa tu contraseña mayor a 6 caracteres" label="Password" disabled />
+            </v-row>
+          </v-form>
+        </v-card-text>
+        <v-card-actions>
+          <v-row align="center" justify="center" class="mb-2 gap-2">
+            <v-btn color="error" class="mr-4" @click="showDialogActualiza  = false">
+              Cancelar
+            </v-btn>
+            <v-btn color="green" class="ml-4" @click="crearEstudiante">
+              Actualizar
             </v-btn>
           </v-row>
         </v-card-actions>
@@ -137,7 +185,9 @@ export default {
       correo: '',
       usuario: '',
       password: '',
-      token: null
+      token: null,
+      estudiante: {}, // Para almacenar al nuevo estudiante
+      showDialogActualiza: false
     }
   },
   mounted () {
@@ -209,6 +259,35 @@ export default {
         .catch((res) => {
           console.log('Error al eliminar estudiante ->', res)
         })
+    },
+    actualiza (item) {
+      this.estudiante = item // de forma global obtenemos al estudiante
+      this.estudiante.password = ''
+      this.showDialogActualiza = true
+      console.log('Estudiante -->', this.estudiante)
+    },
+    updateEstudiante () {
+      this.$axios.put(`/update_study/${this.estudiante.id}`, this.estudiante, {
+        headers: {
+          Authorization: `Bearer ${this.token}`, 'Content-Type': 'application/json'
+        }
+      }).then((res) => {
+        console.log('Respuesta de Peticion a Backend para Actualizar', res)
+        if (res && res.data && res.data.message === 'User update success') {
+          this.loadEstudiantes()
+          this.showDialogActualiza = true
+          this.nombre = ''
+          this.apaterno = ''
+          this.amaterno = ''
+          this.correo = ''
+          this.direccion = ''
+          this.telefono = ''
+          this.usuario = ''
+          this.password = ''
+        }
+      }).catch((res) => {
+        console.error('ERROR al obtener peticion del backend', res)
+      })
     }
   }
 }
